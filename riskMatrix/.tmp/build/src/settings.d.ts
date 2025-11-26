@@ -40,7 +40,13 @@ declare class DataPointCardSettings extends FormattingSettingsCard {
  */
 declare class AxisLabelsCard extends FormattingSettingsCard {
     xAxisLabel: formattingSettings.TextInput;
+    xAxisLabelFontSize: formattingSettings.NumUpDown;
+    xAxisLabelFontFamily: formattingSettings.FontPicker;
+    xAxisLabelColor: formattingSettings.ColorPicker;
     yAxisLabel: formattingSettings.TextInput;
+    yAxisLabelFontSize: formattingSettings.NumUpDown;
+    yAxisLabelFontFamily: formattingSettings.FontPicker;
+    yAxisLabelColor: formattingSettings.ColorPicker;
     name: string;
     displayName: string;
     slices: Array<FormattingSettingsSlice>;

@@ -117,23 +117,17 @@ export class Visual implements IVisual {
             const firstColor = this.formattingSettings?.gradientSettingsCard?.firstColor?.value?.value || "#90EE90";
             const middleColor = this.formattingSettings?.gradientSettingsCard?.middleColor?.value?.value || "#FFD700";
             const lastColor = this.formattingSettings?.gradientSettingsCard?.lastColor?.value?.value || "#FF4500";
-            // Get axis labels - read directly from formatting settings
+            // Get axis labels and formatting - read directly from formatting settings
             // Power BI persists these values in the dataView metadata
             const axisLabelsCard = this.formattingSettings?.axisLabelsCard;
             const xAxisLabel = axisLabelsCard?.xAxisLabel?.value ?? "Impact";
             const yAxisLabel = axisLabelsCard?.yAxisLabel?.value ?? "Likelihood";
-            
-            // Debug logging to see what's actually being read
-            console.log('Axis labels debug:', {
-                axisLabelsCardExists: !!axisLabelsCard,
-                xAxisLabelRaw: axisLabelsCard?.xAxisLabel,
-                yAxisLabelRaw: axisLabelsCard?.yAxisLabel,
-                xAxisLabelValue: axisLabelsCard?.xAxisLabel?.value,
-                yAxisLabelValue: axisLabelsCard?.yAxisLabel?.value,
-                xAxisLabelFinal: xAxisLabel,
-                yAxisLabelFinal: yAxisLabel,
-                dataViewObjects: options.dataViews?.[0]?.metadata?.objects
-            });
+            const xAxisLabelFontSize = axisLabelsCard?.xAxisLabelFontSize?.value ?? 12;
+            const xAxisLabelFontFamily = axisLabelsCard?.xAxisLabelFontFamily?.value ?? "Segoe UI";
+            const xAxisLabelColor = axisLabelsCard?.xAxisLabelColor?.value?.value ?? "#333333";
+            const yAxisLabelFontSize = axisLabelsCard?.yAxisLabelFontSize?.value ?? 12;
+            const yAxisLabelFontFamily = axisLabelsCard?.yAxisLabelFontFamily?.value ?? "Segoe UI";
+            const yAxisLabelColor = axisLabelsCard?.yAxisLabelColor?.value?.value ?? "#333333";
 
             console.log('Rendering with props:', {
                 dataPointsCount: dataPoints.length,
@@ -149,7 +143,13 @@ export class Visual implements IVisual {
                 middleColor,
                 lastColor,
                 xAxisLabel,
-                yAxisLabel
+                yAxisLabel,
+                xAxisLabelFontSize,
+                xAxisLabelFontFamily,
+                xAxisLabelColor,
+                yAxisLabelFontSize,
+                yAxisLabelFontFamily,
+                yAxisLabelColor
             });
 
             this.renderVisual({
@@ -166,7 +166,13 @@ export class Visual implements IVisual {
                 middleColor,
                 lastColor,
                 xAxisLabel,
-                yAxisLabel
+                yAxisLabel,
+                xAxisLabelFontSize,
+                xAxisLabelFontFamily,
+                xAxisLabelColor,
+                yAxisLabelFontSize,
+                yAxisLabelFontFamily,
+                yAxisLabelColor
             });
         } catch (error) {
             console.error('Error in update:', error);
@@ -344,6 +350,12 @@ export class Visual implements IVisual {
         lastColor: string;
         xAxisLabel: string;
         yAxisLabel: string;
+        xAxisLabelFontSize: number;
+        xAxisLabelFontFamily: string;
+        xAxisLabelColor: string;
+        yAxisLabelFontSize: number;
+        yAxisLabelFontFamily: string;
+        yAxisLabelColor: string;
     }) {
         try {
             if (!this.reactRoot) {

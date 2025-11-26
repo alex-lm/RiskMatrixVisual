@@ -138,10 +138,62 @@
                         "text": true
                     }
                 },
+                "xAxisLabelFontSize": {
+                    "displayName": "X-Axis Label Font Size",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "xAxisLabelFontFamily": {
+                    "displayName": "X-Axis Label Font Family",
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "xAxisLabelColor": {
+                    "displayName": "X-Axis Label Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
                 "yAxisLabel": {
                     "displayName": "Y-Axis Label",
                     "type": {
                         "text": true
+                    }
+                },
+                "yAxisLabelFontSize": {
+                    "displayName": "Y-Axis Label Font Size",
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                },
+                "yAxisLabelFontFamily": {
+                    "displayName": "Y-Axis Label Font Family",
+                    "type": {
+                        "formatting": {
+                            "fontFamily": true
+                        }
+                    }
+                },
+                "yAxisLabelColor": {
+                    "displayName": "Y-Axis Label Color",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
                     }
                 }
             }

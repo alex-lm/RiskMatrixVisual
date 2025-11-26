@@ -21,6 +21,12 @@ export interface RiskMatrixProps {
   lastColor: string;
   xAxisLabel: string;
   yAxisLabel: string;
+  xAxisLabelFontSize: number;
+  xAxisLabelFontFamily: string;
+  xAxisLabelColor: string;
+  yAxisLabelFontSize: number;
+  yAxisLabelFontFamily: string;
+  yAxisLabelColor: string;
 }
 
 export const RiskMatrix: React.FC<RiskMatrixProps> = ({
@@ -38,6 +44,12 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
   lastColor,
   xAxisLabel,
   yAxisLabel,
+  xAxisLabelFontSize,
+  xAxisLabelFontFamily,
+  xAxisLabelColor,
+  yAxisLabelFontSize,
+  yAxisLabelFontFamily,
+  yAxisLabelColor,
 }) => {
   console.log("RiskMatrix render:", {
     dataPointsCount: dataPoints?.length || 0,
@@ -308,9 +320,10 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
         x={padding + matrixWidth / 2}
         y={padding - 25}
         textAnchor="middle"
-        fontSize={fontSize}
+        fontSize={xAxisLabelFontSize}
+        fontFamily={xAxisLabelFontFamily}
         fontWeight="bold"
-        fill="#333"
+        fill={xAxisLabelColor}
       >
         {xAxisLabel}
       </text>
@@ -318,9 +331,10 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
         x={20}
         y={padding + matrixHeight / 2}
         textAnchor="middle"
-        fontSize={fontSize}
+        fontSize={yAxisLabelFontSize}
+        fontFamily={yAxisLabelFontFamily}
         fontWeight="bold"
-        fill="#333"
+        fill={yAxisLabelColor}
         transform={`rotate(-90, 20, ${padding + matrixHeight / 2})`}
       >
         {yAxisLabel}

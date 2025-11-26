@@ -124,6 +124,24 @@ class AxisLabelsCard extends FormattingSettingsCard {
         placeholder: "Impact"
     });
 
+    xAxisLabelFontSize = new formattingSettings.NumUpDown({
+        name: "xAxisLabelFontSize",
+        displayName: "Font Size",
+        value: 12
+    });
+
+    xAxisLabelFontFamily = new formattingSettings.FontPicker({
+        name: "xAxisLabelFontFamily",
+        displayName: "Font Family",
+        value: "Segoe UI"
+    });
+
+    xAxisLabelColor = new formattingSettings.ColorPicker({
+        name: "xAxisLabelColor",
+        displayName: "Color",
+        value: { value: "#333333" }
+    });
+
     yAxisLabel = new formattingSettings.TextInput({
         name: "yAxisLabel",
         displayName: "Y-Axis Label",
@@ -131,9 +149,36 @@ class AxisLabelsCard extends FormattingSettingsCard {
         placeholder: "Likelihood"
     });
 
+    yAxisLabelFontSize = new formattingSettings.NumUpDown({
+        name: "yAxisLabelFontSize",
+        displayName: "Font Size",
+        value: 12
+    });
+
+    yAxisLabelFontFamily = new formattingSettings.FontPicker({
+        name: "yAxisLabelFontFamily",
+        displayName: "Font Family",
+        value: "Segoe UI"
+    });
+
+    yAxisLabelColor = new formattingSettings.ColorPicker({
+        name: "yAxisLabelColor",
+        displayName: "Color",
+        value: { value: "#333333" }
+    });
+
     name: string = "axisLabels";
     displayName: string = "Axis Labels";
-    slices: Array<FormattingSettingsSlice> = [this.xAxisLabel, this.yAxisLabel];
+    slices: Array<FormattingSettingsSlice> = [
+        this.xAxisLabel,
+        this.xAxisLabelFontSize,
+        this.xAxisLabelFontFamily,
+        this.xAxisLabelColor,
+        this.yAxisLabel,
+        this.yAxisLabelFontSize,
+        this.yAxisLabelFontFamily,
+        this.yAxisLabelColor
+    ];
 }
 
 /**

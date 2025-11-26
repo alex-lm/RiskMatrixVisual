@@ -27,12 +27,44 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
     width,
     height
 }) => {
+    console.log('RiskMatrix render:', {
+        dataPointsCount: dataPoints?.length || 0,
+        dataPoints: dataPoints,
+        matrixSize,
+        width,
+        height
+    });
+    // Validate inputs
+    if (!width || !height || width <= 0 || height <= 0) {
+        return (
+            <div style={{ padding: "20px", color: "#666" }}>
+                Invalid dimensions: {width} x {height}
+            </div>
+        );
+    }
+
+    if (!matrixSize || matrixSize <= 0) {
+        return (
+            <div style={{ padding: "20px", color: "#666" }}>
+                Invalid matrix size: {matrixSize}
+            </div>
+        );
+    }
+
     const padding = 60;
     const legendWidth = showLegend ? 200 : 0;
-    const matrixWidth = width - padding * 2 - legendWidth;
-    const matrixHeight = height - padding * 2;
+    const matrixWidth = Math.max(0, width - padding * 2 - legendWidth);
+    const matrixHeight = Math.max(0, height - padding * 2);
     const cellWidth = matrixWidth / matrixSize;
     const cellHeight = matrixHeight / matrixSize;
+
+    if (cellWidth <= 0 || cellHeight <= 0) {
+        return (
+            <div style={{ padding: "20px", color: "#666" }}>
+                Matrix too small for current dimensions
+            </div>
+        );
+    }
 
     // Calculate risk level based on position in matrix
     const getRiskLevel = (likelihood: number, impact: number): string => {
@@ -56,11 +88,13 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
 
     // Convert likelihood and impact to matrix coordinates
     const getCoordinates = (likelihood: number, impact: number) => {
-        // Clamp values to matrix bounds
+        // Clamp values to matrix bounds (ensure they're within 1 to matrixSize)
         const clampedLikelihood = Math.max(1, Math.min(matrixSize, Math.round(likelihood)));
         const clampedImpact = Math.max(1, Math.min(matrixSize, Math.round(impact)));
         
-        // Convert to pixel coordinates (x is impact, y is likelihood, but inverted for display)
+        // Convert to pixel coordinates
+        // X-axis: Impact (left to right: 1 to matrixSize)
+        // Y-axis: Likelihood (bottom to top: 1 to matrixSize, so we invert)
         const x = padding + (clampedImpact - 1) * cellWidth + cellWidth / 2;
         const y = padding + (matrixSize - clampedLikelihood) * cellHeight + cellHeight / 2;
         
@@ -68,7 +102,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
     };
 
     // Group data points by their position for legend
-    const legendData = showLegend
+    const legendData = showLegend && dataPoints
         ? dataPoints.map((point, index) => ({
               ...point,
               color: getRiskColor(point.likelihood, point.impact),
@@ -76,6 +110,23 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
               index
           }))
         : [];
+
+    // If no data points, show empty state
+    if (!dataPoints || dataPoints.length === 0) {
+        return (
+            <div style={{ 
+                width: "100%", 
+                height: "100%", 
+                display: "flex", 
+                alignItems: "center", 
+                justifyContent: "center",
+                fontSize: "14px",
+                color: "#666"
+            }}>
+                No data points to display
+            </div>
+        );
+    }
 
     return (
         <svg width={width} height={height} style={{ border: "1px solid #ccc" }}>
@@ -158,8 +209,19 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
 
             {/* Draw data points */}
             {dataPoints.map((point, index) => {
-                const { x, y } = getCoordinates(point.likelihood, point.impact);
+                const { x, y, clampedLikelihood, clampedImpact } = getCoordinates(point.likelihood, point.impact);
                 const color = getRiskColor(point.likelihood, point.impact);
+                
+                console.log(`Rendering point ${index}:`, {
+                    title: point.title,
+                    likelihood: point.likelihood,
+                    impact: point.impact,
+                    clampedLikelihood,
+                    clampedImpact,
+                    x,
+                    y,
+                    color
+                });
                 
                 return (
                     <g key={`point-${index}`}>
@@ -169,8 +231,8 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
                             r={pointSize}
                             fill={color}
                             stroke="#333"
-                            strokeWidth={1}
-                            opacity={0.8}
+                            strokeWidth={2}
+                            opacity={0.9}
                         />
                         <title>{`${point.title}\nLikelihood: ${point.likelihood}\nImpact: ${point.impact}`}</title>
                     </g>

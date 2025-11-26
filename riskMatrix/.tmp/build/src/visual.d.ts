@@ -10,6 +10,7 @@ export declare class Visual implements IVisual {
     private reactRoot;
     constructor(options: VisualConstructorOptions);
     update(options: VisualUpdateOptions): void;
+    private extractValue;
     private parseDataView;
     private renderVisual;
     private renderEmpty;

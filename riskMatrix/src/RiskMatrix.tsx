@@ -76,14 +76,28 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
         return "Low";
     };
 
-    // Get color based on risk level
-    const getRiskColor = (likelihood: number, impact: number): string => {
-        const riskScore = likelihood * impact;
-        const maxRisk = matrixSize * matrixSize;
-        
-        if (riskScore >= maxRisk * 0.7) return "#FF0000"; // Red for high risk
-        if (riskScore >= maxRisk * 0.4) return "#FFA500"; // Orange for medium risk
-        return "#FFFF00"; // Yellow for low risk
+    // Predefined color palette for unique point colors
+    const colorPalette = [
+        "#FF6B6B", // Red
+        "#4ECDC4", // Teal
+        "#45B7D1", // Blue
+        "#FFA07A", // Light Salmon
+        "#98D8C8", // Mint
+        "#F7DC6F", // Yellow
+        "#BB8FCE", // Purple
+        "#85C1E2", // Sky Blue
+        "#F8B739", // Orange
+        "#52BE80", // Green
+        "#EC7063", // Coral
+        "#5DADE2", // Light Blue
+        "#F4D03F", // Gold
+        "#A569BD", // Medium Purple
+        "#48C9B0"  // Turquoise
+    ];
+
+    // Assign unique color to each data point
+    const getPointColor = (index: number): string => {
+        return colorPalette[index % colorPalette.length];
     };
 
     // Convert likelihood and impact to matrix coordinates
@@ -105,7 +119,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
     const legendData = showLegend && dataPoints
         ? dataPoints.map((point, index) => ({
               ...point,
-              color: getRiskColor(point.likelihood, point.impact),
+              color: getPointColor(index),
               riskLevel: getRiskLevel(point.likelihood, point.impact),
               index
           }))
@@ -210,7 +224,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
             {/* Draw data points */}
             {dataPoints.map((point, index) => {
                 const { x, y, clampedLikelihood, clampedImpact } = getCoordinates(point.likelihood, point.impact);
-                const color = getRiskColor(point.likelihood, point.impact);
+                const color = getPointColor(index);
                 
                 console.log(`Rendering point ${index}:`, {
                     title: point.title,
@@ -252,32 +266,33 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
                         Legend
                     </text>
                     {legendData.map((item, index) => (
-                        <g key={`legend-${index}`} transform={`translate(0, ${25 + index * 25})`}>
+                        <g key={`legend-${index}`} transform={`translate(0, ${25 + index * 30})`}>
                             <circle
                                 cx={0}
                                 cy={0}
-                                r={pointSize / 2}
+                                r={pointSize / 2 + 1}
                                 fill={item.color}
                                 stroke="#333"
-                                strokeWidth={1}
+                                strokeWidth={2}
                             />
                             <text
-                                x={15}
+                                x={20}
                                 y={0}
                                 fontSize={fontSize - 2}
                                 fill="#333"
                                 dominantBaseline="middle"
+                                fontWeight="500"
                             >
                                 {item.title}
                             </text>
                             <text
-                                x={15}
-                                y={12}
-                                fontSize={fontSize - 4}
+                                x={20}
+                                y={14}
+                                fontSize={fontSize - 3}
                                 fill="#666"
                                 dominantBaseline="middle"
                             >
-                                L:{item.likelihood} I:{item.impact}
+                                L: {item.likelihood.toFixed(1)} | I: {item.impact.toFixed(1)}
                             </text>
                         </g>
                     ))}

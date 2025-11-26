@@ -167,30 +167,70 @@ export class Visual implements IVisual {
                 return dataPoints;
             }
 
-            // Expected columns: Title, Likelihood, Impact
+            // Find column indices by role
+            let titleIndex = -1;
+            let likelihoodIndex = -1;
+            let impactIndex = -1;
+
+            if (table.columns) {
+                for (let i = 0; i < table.columns.length; i++) {
+                    const column = table.columns[i];
+                    const role = column.roles;
+                    
+                    console.log(`Column ${i}:`, {
+                        displayName: column.displayName,
+                        roles: role,
+                        isMeasure: column.isMeasure
+                    });
+
+                    // Check if this column matches our roles
+                    if (role && role.title) {
+                        titleIndex = i;
+                    }
+                    if (role && role.likelihood) {
+                        likelihoodIndex = i;
+                    }
+                    if (role && role.impact) {
+                        impactIndex = i;
+                    }
+                }
+            }
+
+            // Fallback: if roles aren't found, assume order: Title (0), Likelihood (1), Impact (2)
+            if (titleIndex === -1) titleIndex = 0;
+            if (likelihoodIndex === -1) likelihoodIndex = 1;
+            if (impactIndex === -1) impactIndex = 2;
+
+            console.log('Column indices:', { titleIndex, likelihoodIndex, impactIndex });
+
+            // Parse rows
             for (let i = 0; i < table.rows.length; i++) {
                 const row: DataViewTableRow = table.rows[i];
                 
                 console.log(`Row ${i}:`, row);
-                console.log(`Row ${i} type check:`, row.map((v, idx) => ({ idx, value: v, type: typeof v })));
                 
                 if (!row || row.length < 3) {
                     console.log(`Row ${i} has insufficient columns:`, row?.length);
                     continue;
                 }
 
-                // Get title (first column - grouping)
-                const titleValue = this.extractValue(row[0]);
+                // Skip total rows (they usually have empty or special title values)
+                const titleValue = this.extractValue(row[titleIndex]);
+                if (!titleValue || String(titleValue).trim() === '' || String(titleValue).toLowerCase() === 'total') {
+                    console.log(`Skipping row ${i} (total or empty title):`, titleValue);
+                    continue;
+                }
+
+                // Get title
                 let title = "";
                 if (titleValue !== null && titleValue !== undefined) {
                     title = String(titleValue).trim();
                 }
 
-                // Get likelihood (second column - measure)
-                const likelihoodValue = this.extractValue(row[1]);
+                // Get likelihood
+                const likelihoodValue = this.extractValue(row[likelihoodIndex]);
                 let likelihood = 0;
                 if (likelihoodValue !== null && likelihoodValue !== undefined) {
-                    // Try to convert to number
                     if (typeof likelihoodValue === 'number') {
                         likelihood = likelihoodValue;
                     } else if (typeof likelihoodValue === 'string') {
@@ -206,11 +246,10 @@ export class Visual implements IVisual {
                     }
                 }
 
-                // Get impact (third column - measure)
-                const impactValue = this.extractValue(row[2]);
+                // Get impact
+                const impactValue = this.extractValue(row[impactIndex]);
                 let impact = 0;
                 if (impactValue !== null && impactValue !== undefined) {
-                    // Try to convert to number
                     if (typeof impactValue === 'number') {
                         impact = impactValue;
                     } else if (typeof impactValue === 'string') {
@@ -235,7 +274,7 @@ export class Visual implements IVisual {
                     impactValid: !isNaN(impact) && impact >= 0
                 });
 
-                // Allow 0 values, but require valid numbers and non-empty title
+                // Require valid numbers and non-empty title
                 if (title && !isNaN(likelihood) && !isNaN(impact) && likelihood >= 0 && impact >= 0) {
                     dataPoints.push({
                         title,

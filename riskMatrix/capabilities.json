@@ -1,0 +1,93 @@
+{
+    "dataRoles": [
+        {
+            "displayName": "Likelihood",
+            "name": "likelihood",
+            "kind": "Measure"
+        },
+        {
+            "displayName": "Impact",
+            "name": "impact",
+            "kind": "Measure"
+        },
+        {
+            "displayName": "Title",
+            "name": "title",
+            "kind": "Grouping"
+        }
+    ],
+    "dataViewMappings": [
+        {
+            "table": {
+                "rows": {
+                    "select": [
+                        {
+                            "bind": {
+                                "to": "title"
+                            }
+                        },
+                        {
+                            "bind": {
+                                "to": "likelihood"
+                            }
+                        },
+                        {
+                            "bind": {
+                                "to": "impact"
+                            }
+                        }
+                    ],
+                    "dataReductionAlgorithm": {
+                        "top": {}
+                    }
+                }
+            }
+        }
+    ],
+    "objects": {
+        "matrixSettings": {
+            "displayName": "Matrix Settings",
+            "properties": {
+                "matrixSize": {
+                    "displayName": "Matrix Size",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "showLegend": {
+                    "displayName": "Show Legend",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "pointSize": {
+                    "displayName": "Point Size",
+                    "type": {
+                        "numeric": true
+                    }
+                }
+            }
+        },
+        "dataPoint": {
+            "properties": {
+                "defaultColor": {
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "fontSize": {
+                    "type": {
+                        "formatting": {
+                            "fontSize": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "privileges": []
+}

@@ -123,9 +123,9 @@ export class Visual implements IVisual {
             const xAxisLabelValue = axisLabelsCard?.xAxisLabel?.value;
             const yAxisLabelValue = axisLabelsCard?.yAxisLabel?.value;
             
-            // Use the value if it's a string (including empty string), otherwise use default
-            const xAxisLabel = (typeof xAxisLabelValue === 'string') ? xAxisLabelValue : "Impact";
-            const yAxisLabel = (typeof yAxisLabelValue === 'string') ? yAxisLabelValue : "Likelihood";
+            // Use the value if it's a string (including empty string), otherwise use empty string
+            const xAxisLabel = (typeof xAxisLabelValue === 'string') ? xAxisLabelValue : "";
+            const yAxisLabel = (typeof yAxisLabelValue === 'string') ? yAxisLabelValue : "";
             
             // Debug logging
             console.log('Axis labels:', {

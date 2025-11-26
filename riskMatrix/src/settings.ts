@@ -120,14 +120,14 @@ class AxisLabelsCard extends FormattingSettingsCard {
     xAxisLabel = new formattingSettings.TextInput({
         name: "xAxisLabel",
         displayName: "X-Axis Label",
-        value: "",
+        value: "Impact",
         placeholder: "Impact"
     });
 
     yAxisLabel = new formattingSettings.TextInput({
         name: "yAxisLabel",
         displayName: "Y-Axis Label",
-        value: "",
+        value: "Likelihood",
         placeholder: "Likelihood"
     });
 

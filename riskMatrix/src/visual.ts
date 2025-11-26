@@ -64,16 +64,16 @@ export class Visual implements IVisual {
 
     public update(options: VisualUpdateOptions) {
         try {
-            // Initialize formatting settings with default if no dataView
-            if (!this.formattingSettings) {
-                this.formattingSettings = new VisualFormattingSettingsModel();
-            }
-            
+            // Always populate formatting settings from dataView if available
+            // This ensures we get the persisted values from Power BI
             if (options.dataViews && options.dataViews.length > 0) {
                 this.formattingSettings = this.formattingSettingsService.populateFormattingSettingsModel(
                     VisualFormattingSettingsModel,
                     options.dataViews[0]
                 );
+            } else if (!this.formattingSettings) {
+                // Only create default if we don't have settings and no dataView
+                this.formattingSettings = new VisualFormattingSettingsModel();
             }
 
             console.log('Visual update', options);
@@ -117,25 +117,22 @@ export class Visual implements IVisual {
             const firstColor = this.formattingSettings?.gradientSettingsCard?.firstColor?.value?.value || "#90EE90";
             const middleColor = this.formattingSettings?.gradientSettingsCard?.middleColor?.value?.value || "#FFD700";
             const lastColor = this.formattingSettings?.gradientSettingsCard?.lastColor?.value?.value || "#FF4500";
-            // Get axis labels - read from formatting settings
-            // Check if axisLabelsCard exists and has the properties
+            // Get axis labels - read directly from formatting settings
+            // Power BI persists these values in the dataView metadata
             const axisLabelsCard = this.formattingSettings?.axisLabelsCard;
-            const xAxisLabelValue = axisLabelsCard?.xAxisLabel?.value;
-            const yAxisLabelValue = axisLabelsCard?.yAxisLabel?.value;
+            const xAxisLabel = axisLabelsCard?.xAxisLabel?.value ?? "Impact";
+            const yAxisLabel = axisLabelsCard?.yAxisLabel?.value ?? "Likelihood";
             
-            // Use the value if it's a string (including empty string), otherwise use empty string
-            const xAxisLabel = (typeof xAxisLabelValue === 'string') ? xAxisLabelValue : "";
-            const yAxisLabel = (typeof yAxisLabelValue === 'string') ? yAxisLabelValue : "";
-            
-            // Debug logging
-            console.log('Axis labels:', {
+            // Debug logging to see what's actually being read
+            console.log('Axis labels debug:', {
                 axisLabelsCardExists: !!axisLabelsCard,
-                xAxisLabelValue,
-                yAxisLabelValue,
-                xAxisLabelType: typeof xAxisLabelValue,
-                yAxisLabelType: typeof yAxisLabelValue,
+                xAxisLabelRaw: axisLabelsCard?.xAxisLabel,
+                yAxisLabelRaw: axisLabelsCard?.yAxisLabel,
+                xAxisLabelValue: axisLabelsCard?.xAxisLabel?.value,
+                yAxisLabelValue: axisLabelsCard?.yAxisLabel?.value,
                 xAxisLabelFinal: xAxisLabel,
-                yAxisLabelFinal: yAxisLabel
+                yAxisLabelFinal: yAxisLabel,
+                dataViewObjects: options.dataViews?.[0]?.metadata?.objects
             });
 
             console.log('Rendering with props:', {

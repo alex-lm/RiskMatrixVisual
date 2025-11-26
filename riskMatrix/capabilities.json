@@ -128,6 +128,23 @@
                     }
                 }
             }
+        },
+        "axisLabels": {
+            "displayName": "Axis Labels",
+            "properties": {
+                "xAxisLabel": {
+                    "displayName": "X-Axis Label",
+                    "type": {
+                        "text": true
+                    }
+                },
+                "yAxisLabel": {
+                    "displayName": "Y-Axis Label",
+                    "type": {
+                        "text": true
+                    }
+                }
+            }
         }
     },
     "privileges": []

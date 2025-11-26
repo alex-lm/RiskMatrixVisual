@@ -9,6 +9,8 @@
         "moduleResolution": "node",
         "declaration": true,
         "jsx": "react",
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
         "lib": [
             "es2022",
             "dom"

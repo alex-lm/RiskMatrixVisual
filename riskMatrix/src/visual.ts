@@ -28,8 +28,8 @@
 import powerbi from "powerbi-visuals-api";
 import { FormattingSettingsService } from "powerbi-visuals-utils-formattingmodel";
 import "./../style/visual.less";
-import React from "react";
-import ReactDOM from "react-dom/client";
+import * as React from "react";
+import { createRoot, Root } from "react-dom/client";
 import { RiskMatrix, RiskDataPoint } from "./RiskMatrix";
 import { VisualFormattingSettingsModel } from "./settings";
 
@@ -44,7 +44,7 @@ export class Visual implements IVisual {
     private target: HTMLElement;
     private formattingSettings: VisualFormattingSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
-    private reactRoot: ReactDOM.Root | null = null;
+    private reactRoot: Root | null = null;
 
     constructor(options: VisualConstructorOptions) {
         console.log('Visual constructor', options);
@@ -58,7 +58,7 @@ export class Visual implements IVisual {
         this.target.appendChild(container);
         
         // Initialize React root
-        this.reactRoot = ReactDOM.createRoot(container);
+        this.reactRoot = createRoot(container);
     }
 
     public update(options: VisualUpdateOptions) {

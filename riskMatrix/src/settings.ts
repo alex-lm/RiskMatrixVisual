@@ -114,6 +114,29 @@ class DataPointCardSettings extends FormattingSettingsCard {
 }
 
 /**
+ * Axis Labels Settings Card
+ */
+class AxisLabelsCard extends FormattingSettingsCard {
+    xAxisLabel = new formattingSettings.TextInput({
+        name: "xAxisLabel",
+        displayName: "X-Axis Label",
+        value: "Impact",
+        placeholder: "Impact"
+    });
+
+    yAxisLabel = new formattingSettings.TextInput({
+        name: "yAxisLabel",
+        displayName: "Y-Axis Label",
+        value: "Likelihood",
+        placeholder: "Likelihood"
+    });
+
+    name: string = "axisLabels";
+    displayName: string = "Axis Labels";
+    slices: Array<FormattingSettingsSlice> = [this.xAxisLabel, this.yAxisLabel];
+}
+
+/**
 * visual settings model class
 *
 */
@@ -122,6 +145,7 @@ export class VisualFormattingSettingsModel extends FormattingSettingsModel {
     matrixSettingsCard = new MatrixSettingsCard();
     gradientSettingsCard = new GradientSettingsCard();
     dataPointCard = new DataPointCardSettings();
+    axisLabelsCard = new AxisLabelsCard();
 
-    cards = [this.matrixSettingsCard, this.gradientSettingsCard, this.dataPointCard];
+    cards = [this.matrixSettingsCard, this.gradientSettingsCard, this.dataPointCard, this.axisLabelsCard];
 }

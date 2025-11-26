@@ -36,6 +36,16 @@ declare class DataPointCardSettings extends FormattingSettingsCard {
     slices: Array<FormattingSettingsSlice>;
 }
 /**
+ * Axis Labels Settings Card
+ */
+declare class AxisLabelsCard extends FormattingSettingsCard {
+    xAxisLabel: formattingSettings.TextInput;
+    yAxisLabel: formattingSettings.TextInput;
+    name: string;
+    displayName: string;
+    slices: Array<FormattingSettingsSlice>;
+}
+/**
 * visual settings model class
 *
 */
@@ -43,6 +53,7 @@ export declare class VisualFormattingSettingsModel extends FormattingSettingsMod
     matrixSettingsCard: MatrixSettingsCard;
     gradientSettingsCard: GradientSettingsCard;
     dataPointCard: DataPointCardSettings;
-    cards: (MatrixSettingsCard | GradientSettingsCard | DataPointCardSettings)[];
+    axisLabelsCard: AxisLabelsCard;
+    cards: (MatrixSettingsCard | GradientSettingsCard | DataPointCardSettings | AxisLabelsCard)[];
 }
 export {};

@@ -117,6 +117,8 @@ export class Visual implements IVisual {
             const firstColor = this.formattingSettings?.gradientSettingsCard?.firstColor?.value?.value || "#90EE90";
             const middleColor = this.formattingSettings?.gradientSettingsCard?.middleColor?.value?.value || "#FFD700";
             const lastColor = this.formattingSettings?.gradientSettingsCard?.lastColor?.value?.value || "#FF4500";
+            const xAxisLabel = this.formattingSettings?.axisLabelsCard?.xAxisLabel?.value || "Impact";
+            const yAxisLabel = this.formattingSettings?.axisLabelsCard?.yAxisLabel?.value || "Likelihood";
 
             console.log('Rendering with props:', {
                 dataPointsCount: dataPoints.length,
@@ -130,7 +132,9 @@ export class Visual implements IVisual {
                 showGradient,
                 firstColor,
                 middleColor,
-                lastColor
+                lastColor,
+                xAxisLabel,
+                yAxisLabel
             });
 
             this.renderVisual({
@@ -145,7 +149,9 @@ export class Visual implements IVisual {
                 showGradient,
                 firstColor,
                 middleColor,
-                lastColor
+                lastColor,
+                xAxisLabel,
+                yAxisLabel
             });
         } catch (error) {
             console.error('Error in update:', error);
@@ -321,6 +327,8 @@ export class Visual implements IVisual {
         firstColor: string;
         middleColor: string;
         lastColor: string;
+        xAxisLabel: string;
+        yAxisLabel: string;
     }) {
         try {
             if (!this.reactRoot) {

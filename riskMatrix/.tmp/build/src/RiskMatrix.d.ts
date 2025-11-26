@@ -17,5 +17,7 @@ export interface RiskMatrixProps {
     firstColor: string;
     middleColor: string;
     lastColor: string;
+    xAxisLabel: string;
+    yAxisLabel: string;
 }
 export declare const RiskMatrix: React.FC<RiskMatrixProps>;

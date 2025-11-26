@@ -68,6 +68,47 @@
                 }
             }
         },
+        "gradientSettings": {
+            "displayName": "Gradient Colors",
+            "properties": {
+                "showGradient": {
+                    "displayName": "Show Gradient Background",
+                    "type": {
+                        "bool": true
+                    }
+                },
+                "firstColor": {
+                    "displayName": "First Color (Low Risk)",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "middleColor": {
+                    "displayName": "Middle Color (Medium Risk)",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                },
+                "lastColor": {
+                    "displayName": "Last Color (High Risk)",
+                    "type": {
+                        "fill": {
+                            "solid": {
+                                "color": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "dataPoint": {
             "properties": {
                 "defaultColor": {

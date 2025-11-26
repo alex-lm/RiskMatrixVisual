@@ -14,6 +14,18 @@ declare class MatrixSettingsCard extends FormattingSettingsCard {
     slices: Array<FormattingSettingsSlice>;
 }
 /**
+ * Gradient Settings Card
+ */
+declare class GradientSettingsCard extends FormattingSettingsCard {
+    firstColor: formattingSettings.ColorPicker;
+    middleColor: formattingSettings.ColorPicker;
+    lastColor: formattingSettings.ColorPicker;
+    showGradient: formattingSettings.ToggleSwitch;
+    name: string;
+    displayName: string;
+    slices: Array<FormattingSettingsSlice>;
+}
+/**
  * Data Point Formatting Card
  */
 declare class DataPointCardSettings extends FormattingSettingsCard {
@@ -29,7 +41,8 @@ declare class DataPointCardSettings extends FormattingSettingsCard {
 */
 export declare class VisualFormattingSettingsModel extends FormattingSettingsModel {
     matrixSettingsCard: MatrixSettingsCard;
+    gradientSettingsCard: GradientSettingsCard;
     dataPointCard: DataPointCardSettings;
-    cards: (MatrixSettingsCard | DataPointCardSettings)[];
+    cards: (MatrixSettingsCard | GradientSettingsCard | DataPointCardSettings)[];
 }
 export {};

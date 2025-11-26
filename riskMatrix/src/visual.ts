@@ -113,6 +113,10 @@ export class Visual implements IVisual {
             const pointSize = this.formattingSettings?.matrixSettingsCard?.pointSize?.value || 8;
             const defaultColor = this.formattingSettings?.dataPointCard?.defaultColor?.value?.value || "#0078D4";
             const fontSize = this.formattingSettings?.dataPointCard?.fontSize?.value || 12;
+            const showGradient = this.formattingSettings?.gradientSettingsCard?.showGradient?.value !== false;
+            const firstColor = this.formattingSettings?.gradientSettingsCard?.firstColor?.value?.value || "#90EE90";
+            const middleColor = this.formattingSettings?.gradientSettingsCard?.middleColor?.value?.value || "#FFD700";
+            const lastColor = this.formattingSettings?.gradientSettingsCard?.lastColor?.value?.value || "#FF4500";
 
             console.log('Rendering with props:', {
                 dataPointsCount: dataPoints.length,
@@ -122,7 +126,11 @@ export class Visual implements IVisual {
                 defaultColor,
                 fontSize,
                 width,
-                height
+                height,
+                showGradient,
+                firstColor,
+                middleColor,
+                lastColor
             });
 
             this.renderVisual({
@@ -133,7 +141,11 @@ export class Visual implements IVisual {
                 defaultColor,
                 fontSize,
                 width,
-                height
+                height,
+                showGradient,
+                firstColor,
+                middleColor,
+                lastColor
             });
         } catch (error) {
             console.error('Error in update:', error);
@@ -305,6 +317,10 @@ export class Visual implements IVisual {
         fontSize: number;
         width: number;
         height: number;
+        showGradient: boolean;
+        firstColor: string;
+        middleColor: string;
+        lastColor: string;
     }) {
         try {
             if (!this.reactRoot) {

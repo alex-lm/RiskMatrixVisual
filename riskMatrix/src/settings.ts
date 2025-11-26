@@ -60,6 +60,39 @@ class MatrixSettingsCard extends FormattingSettingsCard {
 }
 
 /**
+ * Gradient Settings Card
+ */
+class GradientSettingsCard extends FormattingSettingsCard {
+    firstColor = new formattingSettings.ColorPicker({
+        name: "firstColor",
+        displayName: "First Color (Low Risk)",
+        value: { value: "#90EE90" } // Light green
+    });
+
+    middleColor = new formattingSettings.ColorPicker({
+        name: "middleColor",
+        displayName: "Middle Color (Medium Risk)",
+        value: { value: "#FFD700" } // Gold/Yellow
+    });
+
+    lastColor = new formattingSettings.ColorPicker({
+        name: "lastColor",
+        displayName: "Last Color (High Risk)",
+        value: { value: "#FF4500" } // Orange red
+    });
+
+    showGradient = new formattingSettings.ToggleSwitch({
+        name: "showGradient",
+        displayName: "Show Gradient Background",
+        value: true
+    });
+
+    name: string = "gradientSettings";
+    displayName: string = "Gradient Colors";
+    slices: Array<FormattingSettingsSlice> = [this.showGradient, this.firstColor, this.middleColor, this.lastColor];
+}
+
+/**
  * Data Point Formatting Card
  */
 class DataPointCardSettings extends FormattingSettingsCard {
@@ -87,7 +120,8 @@ class DataPointCardSettings extends FormattingSettingsCard {
 export class VisualFormattingSettingsModel extends FormattingSettingsModel {
     // Create formatting settings model formatting cards
     matrixSettingsCard = new MatrixSettingsCard();
+    gradientSettingsCard = new GradientSettingsCard();
     dataPointCard = new DataPointCardSettings();
 
-    cards = [this.matrixSettingsCard, this.dataPointCard];
+    cards = [this.matrixSettingsCard, this.gradientSettingsCard, this.dataPointCard];
 }

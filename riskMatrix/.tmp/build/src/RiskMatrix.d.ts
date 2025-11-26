@@ -13,5 +13,9 @@ export interface RiskMatrixProps {
     fontSize: number;
     width: number;
     height: number;
+    showGradient: boolean;
+    firstColor: string;
+    middleColor: string;
+    lastColor: string;
 }
 export declare const RiskMatrix: React.FC<RiskMatrixProps>;

@@ -15,6 +15,10 @@ export interface RiskMatrixProps {
     fontSize: number;
     width: number;
     height: number;
+    showGradient: boolean;
+    firstColor: string;
+    middleColor: string;
+    lastColor: string;
 }
 
 export const RiskMatrix: React.FC<RiskMatrixProps> = ({
@@ -25,7 +29,11 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
     defaultColor,
     fontSize,
     width,
-    height
+    height,
+    showGradient,
+    firstColor,
+    middleColor,
+    lastColor
 }) => {
     console.log('RiskMatrix render:', {
         dataPointsCount: dataPoints?.length || 0,
@@ -100,6 +108,57 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
         return colorPalette[index % colorPalette.length];
     };
 
+    // Convert hex color to RGB
+    const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : { r: 0, g: 0, b: 0 };
+    };
+
+    // Convert RGB to hex
+    const rgbToHex = (r: number, g: number, b: number): string => {
+        return "#" + [r, g, b].map(x => {
+            const hex = Math.round(x).toString(16);
+            return hex.length === 1 ? "0" + hex : hex;
+        }).join("");
+    };
+
+    // Interpolate between two colors
+    const interpolateColor = (color1: string, color2: string, factor: number): string => {
+        const rgb1 = hexToRgb(color1);
+        const rgb2 = hexToRgb(color2);
+        const r = rgb1.r + (rgb2.r - rgb1.r) * factor;
+        const g = rgb1.g + (rgb2.g - rgb1.g) * factor;
+        const b = rgb1.b + (rgb2.b - rgb1.b) * factor;
+        return rgbToHex(r, g, b);
+    };
+
+    // Get cell color based on risk score (likelihood * impact)
+    const getCellColor = (likelihood: number, impact: number): string => {
+        if (!showGradient) {
+            return "#FFFFFF"; // White if gradient is disabled
+        }
+
+        const riskScore = likelihood * impact;
+        const minRisk = 1;
+        const maxRisk = matrixSize * matrixSize;
+        const normalizedScore = (riskScore - minRisk) / (maxRisk - minRisk); // 0 to 1
+
+        // Interpolate: first -> middle -> last
+        if (normalizedScore <= 0.5) {
+            // Interpolate between first and middle
+            const factor = normalizedScore * 2; // 0 to 1
+            return interpolateColor(firstColor, middleColor, factor);
+        } else {
+            // Interpolate between middle and last
+            const factor = (normalizedScore - 0.5) * 2; // 0 to 1
+            return interpolateColor(middleColor, lastColor, factor);
+        }
+    };
+
     // Convert likelihood and impact to matrix coordinates
     const getCoordinates = (likelihood: number, impact: number) => {
         // Clamp values to matrix bounds (ensure they're within 1 to matrixSize)
@@ -144,6 +203,29 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
 
     return (
         <svg width={width} height={height} style={{ border: "1px solid #ccc" }}>
+            {/* Draw gradient cells - rendered first so they appear behind grid */}
+            {showGradient && Array.from({ length: matrixSize }).flatMap((_, rowIndex) => 
+                Array.from({ length: matrixSize }).map((_, colIndex) => {
+                    const likelihood = matrixSize - rowIndex; // Y-axis: 5 at top, 1 at bottom
+                    const impact = colIndex + 1; // X-axis: 1 at left, 5 at right
+                    const cellColor = getCellColor(likelihood, impact);
+                    const x = padding + colIndex * cellWidth;
+                    const y = padding + rowIndex * cellHeight;
+                    
+                    return (
+                        <rect
+                            key={`cell-${rowIndex}-${colIndex}`}
+                            x={x}
+                            y={y}
+                            width={cellWidth}
+                            height={cellHeight}
+                            fill={cellColor}
+                            stroke="none"
+                        />
+                    );
+                })
+            )}
+
             {/* Draw grid */}
             {Array.from({ length: matrixSize + 1 }).map((_, i) => (
                 <React.Fragment key={`grid-${i}`}>

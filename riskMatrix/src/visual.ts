@@ -117,8 +117,26 @@ export class Visual implements IVisual {
             const firstColor = this.formattingSettings?.gradientSettingsCard?.firstColor?.value?.value || "#90EE90";
             const middleColor = this.formattingSettings?.gradientSettingsCard?.middleColor?.value?.value || "#FFD700";
             const lastColor = this.formattingSettings?.gradientSettingsCard?.lastColor?.value?.value || "#FF4500";
-            const xAxisLabel = this.formattingSettings?.axisLabelsCard?.xAxisLabel?.value || "Impact";
-            const yAxisLabel = this.formattingSettings?.axisLabelsCard?.yAxisLabel?.value || "Likelihood";
+            // Get axis labels - read from formatting settings
+            // Check if axisLabelsCard exists and has the properties
+            const axisLabelsCard = this.formattingSettings?.axisLabelsCard;
+            const xAxisLabelValue = axisLabelsCard?.xAxisLabel?.value;
+            const yAxisLabelValue = axisLabelsCard?.yAxisLabel?.value;
+            
+            // Use the value if it's a string (including empty string), otherwise use default
+            const xAxisLabel = (typeof xAxisLabelValue === 'string') ? xAxisLabelValue : "Impact";
+            const yAxisLabel = (typeof yAxisLabelValue === 'string') ? yAxisLabelValue : "Likelihood";
+            
+            // Debug logging
+            console.log('Axis labels:', {
+                axisLabelsCardExists: !!axisLabelsCard,
+                xAxisLabelValue,
+                yAxisLabelValue,
+                xAxisLabelType: typeof xAxisLabelValue,
+                yAxisLabelType: typeof yAxisLabelValue,
+                xAxisLabelFinal: xAxisLabel,
+                yAxisLabelFinal: yAxisLabel
+            });
 
             console.log('Rendering with props:', {
                 dataPointsCount: dataPoints.length,

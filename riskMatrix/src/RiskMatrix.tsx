@@ -8,7 +8,8 @@ export interface RiskDataPoint {
 
 export interface RiskMatrixProps {
   dataPoints: RiskDataPoint[];
-  matrixSize: number;
+  xAxisSize: number;
+  yAxisSize: number;
   showLegend: boolean;
   pointSize: number;
   defaultColor: string;
@@ -31,7 +32,8 @@ export interface RiskMatrixProps {
 
 export const RiskMatrix: React.FC<RiskMatrixProps> = ({
   dataPoints,
-  matrixSize,
+  xAxisSize,
+  yAxisSize,
   showLegend,
   pointSize,
   defaultColor,
@@ -54,7 +56,8 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
   console.log("RiskMatrix render:", {
     dataPointsCount: dataPoints?.length || 0,
     dataPoints: dataPoints,
-    matrixSize,
+    xAxisSize,
+    yAxisSize,
     width,
     height,
   });
@@ -67,10 +70,18 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
     );
   }
 
-  if (!matrixSize || matrixSize <= 0) {
+  if (!xAxisSize || xAxisSize <= 0) {
     return (
       <div style={{ padding: "20px", color: "#666" }}>
-        Invalid matrix size: {matrixSize}
+        Invalid matrix size: {xAxisSize}
+      </div>
+    );
+  }
+
+  if (!yAxisSize || yAxisSize <= 0) {
+    return (
+      <div style={{ padding: "20px", color: "#666" }}>
+        Invalid matrix size: {yAxisSize}
       </div>
     );
   }
@@ -79,8 +90,8 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
   const legendWidth = showLegend ? 200 : 0;
   const matrixWidth = Math.max(0, width - padding * 2 - legendWidth);
   const matrixHeight = Math.max(0, height - padding * 2);
-  const cellWidth = matrixWidth / matrixSize;
-  const cellHeight = matrixHeight / matrixSize;
+  const cellWidth = matrixWidth / xAxisSize;
+  const cellHeight = matrixHeight / yAxisSize;
 
   if (cellWidth <= 0 || cellHeight <= 0) {
     return (
@@ -93,7 +104,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
   // Calculate risk level based on position in matrix
   const getRiskLevel = (likelihood: number, impact: number): string => {
     const riskScore = likelihood * impact;
-    const maxRisk = matrixSize * matrixSize;
+    const maxRisk = xAxisSize * yAxisSize;
 
     if (riskScore >= maxRisk * 0.7) return "High";
     if (riskScore >= maxRisk * 0.4) return "Medium";
@@ -171,7 +182,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
 
     const riskScore = likelihood * impact;
     const minRisk = 1;
-    const maxRisk = matrixSize * matrixSize;
+    const maxRisk = xAxisSize * yAxisSize;
     const normalizedScore = (riskScore - minRisk) / (maxRisk - minRisk); // 0 to 1
 
     // Interpolate: first -> middle -> last
@@ -191,16 +202,16 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
     // Clamp values to matrix bounds (ensure they're within 1 to matrixSize)
     const clampedLikelihood = Math.max(
       1,
-      Math.min(matrixSize, Math.round(likelihood))
+      Math.min(yAxisSize, Math.round(likelihood))
     );
-    const clampedImpact = Math.max(1, Math.min(matrixSize, Math.round(impact)));
+    const clampedImpact = Math.max(1, Math.min(xAxisSize, Math.round(impact)));
 
     // Convert to pixel coordinates
     // X-axis: Impact (left to right: 1 to matrixSize)
     // Y-axis: Likelihood (bottom to top: 1 to matrixSize, so we invert)
     const x = padding + (clampedImpact - 1) * cellWidth + cellWidth / 2;
     const y =
-      padding + (matrixSize - clampedLikelihood) * cellHeight + cellHeight / 2;
+      padding + (yAxisSize - clampedLikelihood) * cellHeight + cellHeight / 2;
 
     return { x, y, clampedLikelihood, clampedImpact };
   };
@@ -239,9 +250,9 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
     <svg width={width} height={height} style={{ border: "1px solid #ccc" }}>
       {/* Draw gradient cells - rendered first so they appear behind grid */}
       {showGradient &&
-        Array.from({ length: matrixSize }).flatMap((_, rowIndex) =>
-          Array.from({ length: matrixSize }).map((_, colIndex) => {
-            const likelihood = matrixSize - rowIndex; // Y-axis: 5 at top, 1 at bottom
+        Array.from({ length: yAxisSize }).flatMap((_, rowIndex) =>
+          Array.from({ length: xAxisSize }).map((_, colIndex) => {
+            const likelihood = yAxisSize - rowIndex; // Y-axis: 5 at top, 1 at bottom
             const impact = colIndex + 1; // X-axis: 1 at left, 5 at right
             const cellColor = getCellColor(likelihood, impact);
             const x = padding + colIndex * cellWidth;
@@ -262,7 +273,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
         )}
 
       {/* Draw grid */}
-      {Array.from({ length: matrixSize + 1 }).map((_, i) => (
+      {Array.from({ length: xAxisSize + 1 }).map((_, i) => (
         <React.Fragment key={`grid-${i}`}>
           {/* Vertical lines */}
           <line
@@ -287,11 +298,11 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
 
       {/* Draw axis labels */}
       {/* X-axis (Impact) */}
-      {Array.from({ length: matrixSize }).map((_, i) => (
+      {Array.from({ length: xAxisSize }).map((_, i) => (
         <text
           key={`x-label-${i}`}
           x={padding + i * cellWidth + cellWidth / 2}
-          y={padding - 10}
+          y={padding + 10 + yAxisSize * cellHeight }
           textAnchor="middle"
           fontSize={fontSize - 2}
           fill="#333"
@@ -301,7 +312,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
       ))}
 
       {/* Y-axis (Likelihood) */}
-      {Array.from({ length: matrixSize }).map((_, i) => (
+      {Array.from({ length: yAxisSize }).map((_, i) => (
         <text
           key={`y-label-${i}`}
           x={padding - 10}
@@ -311,14 +322,14 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
           fill="#333"
           dominantBaseline="middle"
         >
-          {matrixSize - i}
+          {yAxisSize - i}
         </text>
       ))}
 
       {/* Axis titles */}
       <text
         x={padding + matrixWidth / 2}
-        y={padding - 25}
+        y={padding + 25 + yAxisSize * cellHeight }
         textAnchor="middle"
         fontSize={xAxisLabelFontSize}
         fontFamily={xAxisLabelFontFamily}

@@ -6,7 +6,8 @@ import FormattingSettingsModel = formattingSettings.Model;
  * Matrix Settings Card
  */
 declare class MatrixSettingsCard extends FormattingSettingsCard {
-    matrixSize: formattingSettings.NumUpDown;
+    xAxisSize: formattingSettings.NumUpDown;
+    yAxisSize: formattingSettings.NumUpDown;
     showLegend: formattingSettings.ToggleSwitch;
     pointSize: formattingSettings.NumUpDown;
     name: string;

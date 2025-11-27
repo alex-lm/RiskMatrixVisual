@@ -36,9 +36,15 @@ import FormattingSettingsModel = formattingSettings.Model;
  * Matrix Settings Card
  */
 class MatrixSettingsCard extends FormattingSettingsCard {
-    matrixSize = new formattingSettings.NumUpDown({
-        name: "matrixSize",
-        displayName: "Matrix Size",
+    xAxisSize = new formattingSettings.NumUpDown({
+        name: "xAxisSize",
+        displayName: "X Axis Size (Impact)",
+        value: 5
+    });
+
+    yAxisSize = new formattingSettings.NumUpDown({
+        name: "yAxisSize",
+        displayName: "Y Axis Size (Likelihood)",
         value: 5
     });
 
@@ -56,9 +62,8 @@ class MatrixSettingsCard extends FormattingSettingsCard {
 
     name: string = "matrixSettings";
     displayName: string = "Matrix Settings";
-    slices: Array<FormattingSettingsSlice> = [this.matrixSize, this.showLegend, this.pointSize];
+    slices: Array<FormattingSettingsSlice> = [this.xAxisSize, this.yAxisSize, this.showLegend, this.pointSize];
 }
-
 /**
  * Gradient Settings Card
  */

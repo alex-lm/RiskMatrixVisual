@@ -6,7 +6,8 @@ export interface RiskDataPoint {
 }
 export interface RiskMatrixProps {
     dataPoints: RiskDataPoint[];
-    matrixSize: number;
+    xAxisSize: number;
+    yAxisSize: number;
     showLegend: boolean;
     pointSize: number;
     defaultColor: string;

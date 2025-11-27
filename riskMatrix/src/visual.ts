@@ -108,7 +108,8 @@ export class Visual implements IVisual {
                 return;
             }
 
-            const matrixSize = this.formattingSettings?.matrixSettingsCard?.matrixSize?.value || 5;
+            const xAxisSize = this.formattingSettings?.matrixSettingsCard?.xAxisSize?.value || 5;
+            const yAxisSize = this.formattingSettings?.matrixSettingsCard?.yAxisSize?.value || 5;
             const showLegend = this.formattingSettings?.matrixSettingsCard?.showLegend?.value !== false;
             const pointSize = this.formattingSettings?.matrixSettingsCard?.pointSize?.value || 8;
             const defaultColor = this.formattingSettings?.dataPointCard?.defaultColor?.value?.value || "#0078D4";
@@ -131,7 +132,8 @@ export class Visual implements IVisual {
 
             console.log('Rendering with props:', {
                 dataPointsCount: dataPoints.length,
-                matrixSize,
+                xAxisSize,
+                yAxisSize,
                 showLegend,
                 pointSize,
                 defaultColor,
@@ -154,7 +156,8 @@ export class Visual implements IVisual {
 
             this.renderVisual({
                 dataPoints,
-                matrixSize,
+                xAxisSize,
+                yAxisSize,
                 showLegend,
                 pointSize,
                 defaultColor,
@@ -337,7 +340,8 @@ export class Visual implements IVisual {
 
     private renderVisual(props: {
         dataPoints: RiskDataPoint[];
-        matrixSize: number;
+        xAxisSize: number;
+        yAxisSize: number;
         showLegend: boolean;
         pointSize: number;
         defaultColor: string;

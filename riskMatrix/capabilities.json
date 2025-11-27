@@ -54,6 +54,18 @@
                         "numeric": true
                     }
                 },
+                "xAxisSize": {
+                    "displayName": "X Axis Size",
+                    "type": {
+                        "numeric": true
+                    }
+                },
+                "yAxisSize": {
+                    "displayName": "Y Axis Size",
+                    "type": {
+                        "numeric": true
+                    }
+                },
                 "showLegend": {
                     "displayName": "Show Legend",
                     "type": {

@@ -3,12 +3,15 @@ export interface RiskDataPoint {
     title: string;
     likelihood: number;
     impact: number;
+    selectionId?: any;
 }
 export interface RiskMatrixProps {
     dataPoints: RiskDataPoint[];
     xAxisSize: number;
     yAxisSize: number;
+    selectionManager?: any;
     showLegend: boolean;
+    legendPosition: string;
     pointSize: number;
     defaultColor: string;
     fontSize: number;

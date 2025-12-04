@@ -54,6 +54,16 @@ class MatrixSettingsCard extends FormattingSettingsCard {
         value: true
     });
 
+    legendPosition = new formattingSettings.ItemDropdown({
+        name: "legendPosition",
+        displayName: "Legend Position",
+        items: [
+            { displayName: "Right", value: "Right" },
+            { displayName: "Left", value: "Left" }
+        ],
+        value: { displayName: "Right", value: "Right" }
+    });
+
     pointSize = new formattingSettings.NumUpDown({
         name: "pointSize",
         displayName: "Point Size",
@@ -62,7 +72,7 @@ class MatrixSettingsCard extends FormattingSettingsCard {
 
     name: string = "matrixSettings";
     displayName: string = "Matrix Settings";
-    slices: Array<FormattingSettingsSlice> = [this.xAxisSize, this.yAxisSize, this.showLegend, this.pointSize];
+    slices: Array<FormattingSettingsSlice> = [this.xAxisSize, this.yAxisSize, this.showLegend, this.legendPosition, this.pointSize];
 }
 /**
  * Gradient Settings Card

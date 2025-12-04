@@ -4,13 +4,16 @@ export interface RiskDataPoint {
   title: string;
   likelihood: number;
   impact: number;
+  selectionId?: any; // created by the visual host (SelectionId)
 }
 
 export interface RiskMatrixProps {
   dataPoints: RiskDataPoint[];
   xAxisSize: number;
   yAxisSize: number;
+  selectionManager?: any;
   showLegend: boolean;
+  legendPosition: string;
   pointSize: number;
   defaultColor: string;
   fontSize: number;
@@ -34,7 +37,9 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
   dataPoints,
   xAxisSize,
   yAxisSize,
+  selectionManager,
   showLegend,
+  legendPosition,
   pointSize,
   defaultColor,
   fontSize,
@@ -90,6 +95,12 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
   const legendWidth = showLegend ? 200 : 0;
   const matrixWidth = Math.max(0, width - padding * 2 - legendWidth);
   const matrixHeight = Math.max(0, height - padding * 2);
+
+  // Calculate X offset for matrix based on legend position
+  // If legend is Right (default), matrix starts at padding
+  // If legend is Left, matrix starts at padding + legendWidth
+  const matrixXOffset = (showLegend && legendPosition === "Left") ? (padding + legendWidth) : padding;
+
   const cellWidth = matrixWidth / xAxisSize;
   const cellHeight = matrixHeight / yAxisSize;
 
@@ -140,10 +151,10 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
       ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16),
-        }
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16),
+      }
       : { r: 0, g: 0, b: 0 };
   };
 
@@ -209,7 +220,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
     // Convert to pixel coordinates
     // X-axis: Impact (left to right: 1 to matrixSize)
     // Y-axis: Likelihood (bottom to top: 1 to matrixSize, so we invert)
-    const x = padding + (clampedImpact - 1) * cellWidth + cellWidth / 2;
+    const x = matrixXOffset + (clampedImpact - 1) * cellWidth + cellWidth / 2;
     const y =
       padding + (yAxisSize - clampedLikelihood) * cellHeight + cellHeight / 2;
 
@@ -220,11 +231,11 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
   const legendData =
     showLegend && dataPoints
       ? dataPoints.map((point, index) => ({
-          ...point,
-          color: getPointColor(index),
-          riskLevel: getRiskLevel(point.likelihood, point.impact),
-          index,
-        }))
+        ...point,
+        color: getPointColor(index),
+        riskLevel: getRiskLevel(point.likelihood, point.impact),
+        index,
+      }))
       : [];
 
   // If no data points, show empty state
@@ -255,7 +266,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
             const likelihood = yAxisSize - rowIndex; // Y-axis: 5 at top, 1 at bottom
             const impact = colIndex + 1; // X-axis: 1 at left, 5 at right
             const cellColor = getCellColor(likelihood, impact);
-            const x = padding + colIndex * cellWidth;
+            const x = matrixXOffset + colIndex * cellWidth;
             const y = padding + rowIndex * cellHeight;
 
             return (
@@ -277,18 +288,22 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
         <React.Fragment key={`grid-${i}`}>
           {/* Vertical lines */}
           <line
-            x1={padding + i * cellWidth}
+            x1={matrixXOffset + i * cellWidth}
             y1={padding}
-            x2={padding + i * cellWidth}
+            x2={matrixXOffset + i * cellWidth}
             y2={padding + matrixHeight}
             stroke="#ddd"
             strokeWidth={1}
           />
+        </React.Fragment>
+      ))}
+      {Array.from({ length: yAxisSize + 1 }).map((_, i) => (
+        <React.Fragment key={`grid-${i}`}>
           {/* Horizontal lines */}
           <line
-            x1={padding}
+            x1={matrixXOffset}
             y1={padding + i * cellHeight}
-            x2={padding + matrixWidth}
+            x2={matrixXOffset + matrixWidth}
             y2={padding + i * cellHeight}
             stroke="#ddd"
             strokeWidth={1}
@@ -296,13 +311,14 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
         </React.Fragment>
       ))}
 
+
       {/* Draw axis labels */}
       {/* X-axis (Impact) */}
       {Array.from({ length: xAxisSize }).map((_, i) => (
         <text
           key={`x-label-${i}`}
-          x={padding + i * cellWidth + cellWidth / 2}
-          y={padding + 10 + yAxisSize * cellHeight }
+          x={matrixXOffset + i * cellWidth + cellWidth / 2}
+          y={padding + 10 + yAxisSize * cellHeight}
           textAnchor="middle"
           fontSize={fontSize - 2}
           fill="#333"
@@ -315,7 +331,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
       {Array.from({ length: yAxisSize }).map((_, i) => (
         <text
           key={`y-label-${i}`}
-          x={padding - 10}
+          x={matrixXOffset - 10}
           y={padding + i * cellHeight + cellHeight / 2}
           textAnchor="end"
           fontSize={fontSize - 2}
@@ -328,8 +344,8 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
 
       {/* Axis titles */}
       <text
-        x={padding + matrixWidth / 2}
-        y={padding + 25 + yAxisSize * cellHeight }
+        x={matrixXOffset + matrixWidth / 2}
+        y={padding + 25 + yAxisSize * cellHeight}
         textAnchor="middle"
         fontSize={xAxisLabelFontSize}
         fontFamily={xAxisLabelFontFamily}
@@ -339,14 +355,14 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
         {xAxisLabel}
       </text>
       <text
-        x={20}
+        x={matrixXOffset - 30}
         y={padding + matrixHeight / 2}
         textAnchor="middle"
         fontSize={yAxisLabelFontSize}
         fontFamily={yAxisLabelFontFamily}
         fontWeight="bold"
         fill={yAxisLabelColor}
-        transform={`rotate(-90, 20, ${padding + matrixHeight / 2})`}
+        transform={`rotate(-90, ${matrixXOffset - 30}, ${padding + matrixHeight / 2})`}
       >
         {yAxisLabel}
       </text>
@@ -380,6 +396,20 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
               stroke="#333"
               strokeWidth={2}
               opacity={0.9}
+              onClick={(evt) => {
+                // click on a point -> filter to that row
+                try {
+                  const multi = (evt as any).ctrlKey || (evt as any).metaKey || (evt as any).shiftKey;
+                  if (point.selectionId && selectionManager) {
+                    // when a selection manager is provided, use it to apply selection
+                    // if the user is holding ctrl/meta then multi-select, otherwise single
+                    selectionManager.select(point.selectionId, multi);
+                  }
+                } catch (e) {
+                  console.warn('Selection failed', e);
+                }
+              }}
+
             />
             <title>{`${point.title}\nLikelihood: ${point.likelihood}\nImpact: ${point.impact}`}</title>
           </g>
@@ -388,7 +418,7 @@ export const RiskMatrix: React.FC<RiskMatrixProps> = ({
 
       {/* Legend */}
       {showLegend && legendData.length > 0 && (
-        <g transform={`translate(${width - legendWidth + 20}, ${padding})`}>
+        <g transform={`translate(${legendPosition === "Left" ? 20 : width - legendWidth + 20}, ${padding})`}>
           <text x={0} y={0} fontSize={fontSize} fontWeight="bold" fill="#333">
             Legend
           </text>

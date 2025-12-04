@@ -45,19 +45,30 @@ export class Visual implements IVisual {
     private target: HTMLElement;
     private formattingSettings: VisualFormattingSettingsModel;
     private formattingSettingsService: FormattingSettingsService;
+    private host: any;
+    private selectionManager: any;
     private reactRoot: Root | null = null;
 
     constructor(options: VisualConstructorOptions) {
         console.log('Visual constructor', options);
         this.formattingSettingsService = new FormattingSettingsService();
+        // keep a reference to the host for selection id creation & selection manager
+        this.host = options.host;
+        try {
+            this.selectionManager = this.host.createSelectionManager();
+        } catch (e) {
+            // selection manager might not exist in some test environments
+            this.selectionManager = null;
+        }
+
         this.target = options.element;
-        
+
         // Create a container div for React
         const container = document.createElement("div");
         container.style.width = "100%";
         container.style.height = "100%";
         this.target.appendChild(container);
-        
+
         // Initialize React root
         this.reactRoot = createRoot(container);
     }
@@ -89,7 +100,7 @@ export class Visual implements IVisual {
             const dataView: DataView = options.dataViews[0];
             console.log('DataView:', dataView);
             console.log('DataView.table:', dataView.table);
-            
+
             if (!dataView.table) {
                 console.log('No table in dataView');
                 this.renderEmpty("No data table found");
@@ -97,8 +108,9 @@ export class Visual implements IVisual {
             }
 
             const dataPoints = this.parseDataView(dataView);
+            // dataPoints may contain selectionId objects created in parseDataView
             console.log('Parsed dataPoints:', dataPoints);
-            
+
             const width = Math.max(options.viewport.width, 200);
             const height = Math.max(options.viewport.height, 200);
 
@@ -111,13 +123,14 @@ export class Visual implements IVisual {
             const xAxisSize = this.formattingSettings?.matrixSettingsCard?.xAxisSize?.value || 5;
             const yAxisSize = this.formattingSettings?.matrixSettingsCard?.yAxisSize?.value || 5;
             const showLegend = this.formattingSettings?.matrixSettingsCard?.showLegend?.value !== false;
+            const legendPosition = (this.formattingSettings?.matrixSettingsCard?.legendPosition?.value?.value as string) || "Right";
             const pointSize = this.formattingSettings?.matrixSettingsCard?.pointSize?.value || 8;
-            const defaultColor = this.formattingSettings?.dataPointCard?.defaultColor?.value?.value || "#0078D4";
+            const defaultColor = (this.formattingSettings?.dataPointCard?.defaultColor?.value?.value as string) || "#0078D4";
             const fontSize = this.formattingSettings?.dataPointCard?.fontSize?.value || 12;
             const showGradient = this.formattingSettings?.gradientSettingsCard?.showGradient?.value !== false;
-            const firstColor = this.formattingSettings?.gradientSettingsCard?.firstColor?.value?.value || "#90EE90";
-            const middleColor = this.formattingSettings?.gradientSettingsCard?.middleColor?.value?.value || "#FFD700";
-            const lastColor = this.formattingSettings?.gradientSettingsCard?.lastColor?.value?.value || "#FF4500";
+            const firstColor = (this.formattingSettings?.gradientSettingsCard?.firstColor?.value?.value as string) || "#90EE90";
+            const middleColor = (this.formattingSettings?.gradientSettingsCard?.middleColor?.value?.value as string) || "#FFD700";
+            const lastColor = (this.formattingSettings?.gradientSettingsCard?.lastColor?.value?.value as string) || "#FF4500";
             // Get axis labels and formatting - read directly from formatting settings
             // Power BI persists these values in the dataView metadata
             const axisLabelsCard = this.formattingSettings?.axisLabelsCard;
@@ -125,16 +138,18 @@ export class Visual implements IVisual {
             const yAxisLabel = axisLabelsCard?.yAxisLabel?.value ?? "Likelihood";
             const xAxisLabelFontSize = axisLabelsCard?.xAxisLabelFontSize?.value ?? 12;
             const xAxisLabelFontFamily = axisLabelsCard?.xAxisLabelFontFamily?.value ?? "Segoe UI";
-            const xAxisLabelColor = axisLabelsCard?.xAxisLabelColor?.value?.value ?? "#333333";
+            const xAxisLabelColor = (axisLabelsCard?.xAxisLabelColor?.value?.value as string) ?? "#333333";
             const yAxisLabelFontSize = axisLabelsCard?.yAxisLabelFontSize?.value ?? 12;
             const yAxisLabelFontFamily = axisLabelsCard?.yAxisLabelFontFamily?.value ?? "Segoe UI";
-            const yAxisLabelColor = axisLabelsCard?.yAxisLabelColor?.value?.value ?? "#333333";
+            const yAxisLabelColor = (axisLabelsCard?.yAxisLabelColor?.value?.value as string) ?? "#333333";
 
             console.log('Rendering with props:', {
                 dataPointsCount: dataPoints.length,
+                selectionManager: this.selectionManager,
                 xAxisSize,
                 yAxisSize,
                 showLegend,
+                legendPosition,
                 pointSize,
                 defaultColor,
                 fontSize,
@@ -156,9 +171,11 @@ export class Visual implements IVisual {
 
             this.renderVisual({
                 dataPoints,
+                selectionManager: this.selectionManager,
                 xAxisSize,
                 yAxisSize,
                 showLegend,
+                legendPosition,
                 pointSize,
                 defaultColor,
                 fontSize,
@@ -218,7 +235,7 @@ export class Visual implements IVisual {
                 for (let i = 0; i < table.columns.length; i++) {
                     const column = table.columns[i];
                     const role = column.roles;
-                    
+
                     console.log(`Column ${i}:`, {
                         displayName: column.displayName,
                         roles: role,
@@ -248,9 +265,9 @@ export class Visual implements IVisual {
             // Parse rows
             for (let i = 0; i < table.rows.length; i++) {
                 const row: DataViewTableRow = table.rows[i];
-                
+
                 console.log(`Row ${i}:`, row);
-                
+
                 if (!row || row.length < 3) {
                     console.log(`Row ${i} has insufficient columns:`, row?.length);
                     continue;
@@ -307,9 +324,9 @@ export class Visual implements IVisual {
                     }
                 }
 
-                console.log(`Parsed row ${i}:`, { 
-                    title, 
-                    likelihood, 
+                console.log(`Parsed row ${i}:`, {
+                    title,
+                    likelihood,
                     impact,
                     titleValid: !!title,
                     likelihoodValid: !isNaN(likelihood) && likelihood >= 0,
@@ -317,11 +334,29 @@ export class Visual implements IVisual {
                 });
 
                 // Require valid numbers and non-empty title
+                // Require valid numbers and non-empty title
                 if (title && !isNaN(likelihood) && !isNaN(impact) && likelihood >= 0 && impact >= 0) {
+                    // create a selection id for each row so we can filter when clicked
+                    let selectionId: any = null;
+                    try {
+                        // Prefer true row identity if present
+                        const rowAny: any = row as any;
+                        if (rowAny && rowAny.identity && this.host && this.host.createSelectionIdBuilder) {
+                            selectionId = this.host.createSelectionIdBuilder().withTable ? this.host.createSelectionIdBuilder().withTable(rowAny.identity).build() : this.host.createSelectionIdBuilder().withKey ? this.host.createSelectionIdBuilder().withKey(i).build() : null;
+                        } else if (table.columns && table.columns[titleIndex] && this.host && this.host.createSelectionIdBuilder) {
+                            // fallback to category selection by row index
+                            selectionId = this.host.createSelectionIdBuilder().withCategory(table.columns[titleIndex], i).build();
+                        }
+                    } catch (e) {
+                        console.warn('Error building selectionId for row', i, e);
+                        selectionId = null;
+                    }
+
                     dataPoints.push({
                         title,
                         likelihood,
-                        impact
+                        impact,
+                        selectionId
                     });
                     console.log(`✓ Added data point ${i}:`, { title, likelihood, impact });
                 } else {
@@ -340,9 +375,11 @@ export class Visual implements IVisual {
 
     private renderVisual(props: {
         dataPoints: RiskDataPoint[];
+        selectionManager?: any;
         xAxisSize: number;
         yAxisSize: number;
         showLegend: boolean;
+        legendPosition: string;
         pointSize: number;
         defaultColor: string;
         fontSize: number;

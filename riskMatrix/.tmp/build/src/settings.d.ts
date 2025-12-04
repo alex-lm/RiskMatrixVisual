@@ -9,6 +9,7 @@ declare class MatrixSettingsCard extends FormattingSettingsCard {
     xAxisSize: formattingSettings.NumUpDown;
     yAxisSize: formattingSettings.NumUpDown;
     showLegend: formattingSettings.ToggleSwitch;
+    legendPosition: formattingSettings.ItemDropdown;
     pointSize: formattingSettings.NumUpDown;
     name: string;
     displayName: string;

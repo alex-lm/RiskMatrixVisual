@@ -72,6 +72,21 @@
                         "bool": true
                     }
                 },
+                "legendPosition": {
+                    "displayName": "Legend Position",
+                    "type": {
+                        "enumeration": [
+                            {
+                                "displayName": "Right",
+                                "value": "Right"
+                            },
+                            {
+                                "displayName": "Left",
+                                "value": "Left"
+                            }
+                        ]
+                    }
+                },
                 "pointSize": {
                     "displayName": "Point Size",
                     "type": {

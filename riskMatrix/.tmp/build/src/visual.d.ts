@@ -7,6 +7,8 @@ export declare class Visual implements IVisual {
     private target;
     private formattingSettings;
     private formattingSettingsService;
+    private host;
+    private selectionManager;
     private reactRoot;
     constructor(options: VisualConstructorOptions);
     update(options: VisualUpdateOptions): void;

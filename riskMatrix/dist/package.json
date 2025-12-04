@@ -1,0 +1,17 @@
+{
+		"version": "1.0.0.0",
+		"author": {"name":"Alexander Le Marchant","email":"alex.lemarchant@controlrisks.com"},
+		"resources": [
+			{
+				"resourceId": "rId0",
+				"sourceType": 5,
+				"file": "resources/riskMatrix7201B7777AFA42C59E8B4EAB078713F7.pbiviz.json"
+			}
+		],
+		"visual": {"name":"riskMatrix","displayName":"riskMatrix","guid":"riskMatrix7201B7777AFA42C59E8B4EAB078713F7","visualClassName":"Visual","version":"1.0.0.0","description":"Risk Matrix","supportUrl":"https://www.carwow.com","gitHubUrl":"https://github.com/alex-lm/RiskMatrixVisual"},
+		"metadata": {
+			"pbivizjson": {
+				"resourceId": "rId0"
+			}
+		}
+	}
